@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>艾飞雅服饰有限公司 | Aifeiya Apparel Co., Ltd.</title>
+    <!-- Tailwind CSS CDN (用于快速构建响应式布局) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google字体：标题使用优雅衬线体Playfair Display，正文使用干净无衬线体Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- 自定义CSS -->
+    <style>
+        :root {
+            --color-cream: #FAF9F6;
+            --color-oatmeal: #E8E3D9;
+            --color-stone: #D1CDC7;
+            --color-charcoal: #3A3A3A;
+            --color-slate: #5C6B73;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--color-charcoal);
+            background-color: var(--color-cream);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, .serif {
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* 淡入动画 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 图片悬停效果 */
+        .gallery-item {
+            transition: transform 0.3s ease-out;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* 自定义间距与留白 */
+        .section-spacing {
+            padding-top: 6rem;
+            padding-bottom: 6rem;
+        }
+        
+        @media (max-width: 768px) {
+            .section-spacing {
+                padding-top: 4rem;
+                padding-bottom: 4rem;
+            }
+        }
+        
+        /* 分隔线样式 */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--color-stone), transparent);
+            margin: 2rem auto;
+            max-width: 200px;
+        }
+
+        /* 图片放大模态框样式 */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            margin: auto;
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 40px;
+            font-weight: 300;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-close:hover {
+            opacity: 0.7;
+        }
+
+        /* 图片双击提示 */
+        .image-container {
+            cursor: zoom-in;
+            position: relative;
+        }
+
+        .image-container:hover::after {
+            content: '双击放大';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .image-container:hover::after {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- ===== 导航栏 ===== -->
+    <!-- 注意：此处替换Logo -->
+    <header class="fixed w-full z-50 bg-white/90 backdrop-blur-sm py-4 px-6 border-b border-stone-100">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <!-- Logo区域 - 此处替换为实际Logo -->
+            <div class="flex items-center space-x-2">
+                <!-- 极简科技感Logo - SVG版本 -->
+                <svg class="w-8 h-8 text-charcoal" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 抽象线条组合，象征服装剪裁与面料的流动感 -->
+                    <path d="M8 24 L16 8 L24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- 下方的水平线条，代表稳定与质感 -->
+                    <path d="M10 20 L22 20" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    <!-- 微妙的点缀点 -->
+                    <circle cx="16" cy="12" r="1" fill="currentColor"/>
+                </svg>
+                <h1 class="serif text-xl text-charcoal tracking-wide">艾飞雅服饰</h1>
+            </div>
+            
+            <nav class="hidden md:flex space-x-8">
+                <a href="#home" class="text-slate-700 hover:text-charcoal transition-colors">首页</a>
+                <a href="#about" class="text-slate-700 hover:text-charcoal transition-colors">关于我们</a>
+                <a href="#gallery" class="text-slate-700 hover:text-charcoal transition-colors">产品系列</a>
+                <a href="#contact" class="text-slate-700 hover:text-charcoal transition-colors">联系我们</a>
+            </nav>
+            
+            <!-- 移动端菜单按钮 -->
+            <button id="mobile-menu-btn" class="md:hidden text-slate-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-sm border-b border-stone-100 hidden">
+            <div class="flex flex-col py-4 px-6 space-y-4">
+                <a href="#home" class="text-slate-700 hover:text-charcoal py-2">首页</a>
+                <a href="#about" class="text-slate-700 hover:text-charcoal py-2">关于我们</a>
+                <a href="#gallery" class="text-slate-700 hover:text-charcoal py-2">产品系列</a>
+                <a href="#contact" class="text-slate-700 hover:text-charcoal py-2">联系我们</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== 首屏区域 (Hero Section) ===== -->
+    <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <!-- 背景图片 - 此处替换首屏背景图 -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 bg-gradient-to-b from-white/40 to-white/80"></div>
+            <!-- 使用高质量占位图，实际使用时替换为品牌背景图 -->
+            <img 
+                src="./shouyemian.png" 
+                alt="艾飞雅服饰背景图" 
+                class="w-full h-full object-cover"
+            >
+        </div>
+        
+        <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
+            <div class="fade-in">
+                <!-- 公司名称 -->
+                <h1 class="serif text-4xl md:text-6xl lg:text-7xl text-charcoal mb-6 tracking-tight">
+                    艾飞雅服饰有限公司
+                </h1>
+                <p class="text-lg md:text-xl text-slate-600 mb-4">Aifeiya Apparel Co., Ltd.</p>
+                
+                <!-- 品牌Slogan - 可根据需要修改 -->
+                <div class="divider"></div>
+                <p class="text-xl md:text-2xl text-slate-700 mb-10 italic leading-relaxed max-w-2xl mx-auto">
+                    于静奢中见风骨，在细节处显匠心
+                </p>
+                <div class="divider"></div>
+                
+                <!-- 引导按钮 -->
+                <a href="#gallery" class="inline-block border border-charcoal text-charcoal px-8 py-3 hover:bg-charcoal hover:text-cream transition-all duration-300 tracking-wider">
+                    探索系列
+                </a>
+            </div>
+        </div>
+        
+        <!-- 滚动指示器 -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+            <a href="#about" class="animate-bounce inline-block">
+                <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- ===== 关于我们 (About Us) ===== -->
+    <section id="about" class="section-spacing bg-white">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="fade-in">
+                <h2 class="serif text-3xl md:text-4xl text-center text-charcoal mb-12">关于我们</h2>
+                
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <!-- 关于我们图片 - 此处可替换为公司相关图片 -->
+                        <div class="aspect-[4/3] overflow-hidden rounded-sm">
+                            <img 
+                                src="./jainjie.png" 
+                                alt="艾飞雅服饰公司" 
+                                class="w-full h-full object-cover"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <p class="text-slate-700 text-lg">
+                            艾飞雅服饰有限公司专注于为具备高审美的成熟女性提供全品类女装解决方案。我们深信，真正的奢华在于不喧哗的质感与恰到好处的剪裁。
+                        </p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-8 h-8 rounded-full bg-oatmeal flex items-center justify-center flex-shrink-0 mt-1">
+                                    <span class="text-slate-600 text-sm">✓</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-charcoal mb-1">版型研发</h3>
+                                    <p class="text-slate-600">深入研究亚洲女性身形特点，结合国际流行趋势，打造既修饰身形又穿着舒适的精良版型。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-4">
+                                <div class="w-8 h-8 rounded-full bg-oatmeal flex items-center justify-center flex-shrink-0 mt-1">
+                                    <span class="text-slate-600 text-sm">✓</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-charcoal mb-1">面料哲学</h3>
+                                    <p class="text-slate-600">严选天然纤维与高品质混纺面料，注重触感、垂坠感与耐久性，呈现"静奢风"特有的低调质感。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-4">
+                                <div class="w-8 h-8 rounded-full bg-oatmeal flex items-center justify-center flex-shrink-0 mt-1">
+                                    <span class="text-slate-600 text-sm">✓</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-charcoal mb-1">全品类覆盖</h3>
+                                    <p class="text-slate-600">从外套、裙装、针织到裤装，提供完整且风格统一的衣橱方案，满足不同场合的着装需求。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 产品系列画廊 (Gallery) ===== -->
+    <section id="gallery" class="section-spacing bg-cream">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="fade-in">
+                <h2 class="serif text-3xl md:text-4xl text-center text-charcoal mb-4">产品系列</h2>
+                <p class="text-slate-600 text-center mb-12 max-w-2xl mx-auto">每一件衣物都是对美学、结构与功能的深思熟虑</p>
+                
+                <!-- 画廊过滤标签（可选功能） -->
+                <div class="flex justify-center flex-wrap gap-4 mb-12">
+                    <button class="category-filter px-4 py-2 border border-stone-300 text-slate-700 hover:border-charcoal hover:text-charcoal transition-colors active" data-category="all">全部系列</button>
+                    <button class="category-filter px-4 py-2 border border-stone-300 text-slate-700 hover:border-charcoal hover:text-charcoal transition-colors" data-category="coat">外套</button>
+                    <button class="category-filter px-4 py-2 border border-stone-300 text-slate-700 hover:border-charcoal hover:text-charcoal transition-colors" data-category="dress">裙装</button>
+                    <button class="category-filter px-4 py-2 border border-stone-300 text-slate-700 hover:border-charcoal hover:text-charcoal transition-colors" data-category="knit">针织</button>
+                    <button class="category-filter px-4 py-2 border border-stone-300 text-slate-700 hover:border-charcoal hover:text-charcoal transition-colors" data-category="pants">裤装</button>
+                </div>
+                
+                <!-- 图片画廊网格 - 每个品类四张图片 -->
+                <!-- 注意：此处修改画廊图片链接，替换所有placehold.co链接为实际产品图片 -->
+
+                <!-- 外套品类 -->
+                <div class="gallery-item fade-in mb-16" data-category="coat">
+                    <div class="text-center mb-8">
+                        <h3 class="serif text-2xl md:text-3xl text-charcoal mb-4">外套系列</h3>
+                        <p class="text-slate-600 max-w-2xl mx-auto">优雅廓形，完美平衡温度与风度，定义冬日完美姿态</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- 外套图片1 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./coat/waitao1.png"
+                                alt="外套款式1"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 外套图片2 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./coat/waitao2.png"
+                                alt="外套款式2"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 外套图片3 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./coat/waitao3.png"
+                                alt="外套款式3"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 外套图片4 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./coat/waitao4.png"
+                                alt="外套款式4"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 裙装品类 -->
+                <div class="gallery-item fade-in mb-16" data-category="dress">
+                    <div class="text-center mb-8">
+                        <h3 class="serif text-2xl md:text-3xl text-charcoal mb-4">裙装系列</h3>
+                        <p class="text-slate-600 max-w-2xl mx-auto">流畅垂坠，勾勒身形线条，诠释极简主义下的女性魅力</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- 裙装图片1 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./dress/lianyiqun1.png"
+                                alt="裙装款式1"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 裙装图片2 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./dress/lianyiqun2.png"
+                                alt="裙装款式2"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 裙装图片3 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./dress/lianyiqun3.png"
+                                alt="裙装款式3"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 裙装图片4 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./dress/lianyiqun4.png"
+                                alt="裙装款式4"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 针织品类 -->
+                <div class="gallery-item fade-in mb-16" data-category="knit">
+                    <div class="text-center mb-8">
+                        <h3 class="serif text-2xl md:text-3xl text-charcoal mb-4">基础系列</h3>
+                        <p class="text-slate-600 max-w-2xl mx-auto">细腻柔软的触感，松弛有度的剪裁，定义秋冬内搭新标准</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- 针织图片1 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./Base/jichu1.png"
+                                alt="针织款式1"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 针织图片2 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./Base/jichu2.jpg"
+                                alt="针织款式2"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 针织图片3 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./Base/jichu3.png"
+                                alt="针织款式3"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 针织图片4 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./Base/jichu4.jpg"
+                                alt="针织款式4"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 裤装品类 -->
+                <div class="gallery-item fade-in mb-16" data-category="pants">
+                    <div class="text-center mb-8">
+                        <h3 class="serif text-2xl md:text-3xl text-charcoal mb-4">裤装系列</h3>
+                        <p class="text-slate-600 max-w-2xl mx-auto">精准的裤线处理，利落廓形，打造现代女性摩登形象</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- 裤装图片1 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./Pants/kuzi1.jpg"
+                                alt="裤装款式1"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 裤装图片2 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./Pants/kuzi2.jpg"
+                                alt="裤装款式2"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 裤装图片3 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./Pants/kuzi3.jpg"
+                                alt="裤装款式3"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                        <!-- 裤装图片4 -->
+                        <div class="aspect-[3/4] overflow-hidden rounded-sm">
+                            <img
+                                src="./Pants/kuzi4.jpg"
+                                alt="裤装款式4"
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 联系我们 (Contact) ===== -->
+    <section id="contact" class="section-spacing bg-white">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="fade-in">
+                <h2 class="serif text-3xl md:text-4xl text-center text-charcoal mb-12">联系我们</h2>
+                
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="serif text-2xl text-charcoal mb-6">公司信息</h3>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-10 h-10 rounded-full bg-oatmeal flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-charcoal mb-1">公司地址</h4>
+                                    <!-- 此处修改公司地址 -->
+                                    <p class="text-slate-600">浙江省 杭州市 临平区 东湖街道 红丰路600号杭州数字港12号楼7楼704 705</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-4">
+                                <div class="w-10 h-10 rounded-full bg-oatmeal flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-charcoal mb-1">商务合作</h4>
+                                    <!-- 此处修改联系邮箱 -->
+                                    <p class="text-slate-600">business@aifeiya-apparel.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-4">
+                                <div class="w-10 h-10 rounded-full bg-oatmeal flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-charcoal mb-1">联系电话</h4>
+                                    <!-- 此处修改联系电话 -->
+                                    <p class="text-slate-600">+86 15750406373</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="serif text-2xl text-charcoal mb-6">关注我们</h3>
+                        <p class="text-slate-600 mb-6">关注我们的社交媒体，获取最新系列与穿搭灵感</p>
+                        
+                        <div class="flex space-x-4">
+                            <!-- 社交媒体链接 - 此处修改为实际社交媒体链接 -->
+                            <a href="#" class="w-12 h-12 rounded-full bg-oatmeal flex items-center justify-center hover:bg-stone-300 transition-colors">
+                                <span class="text-slate-700">微</span>
+                            </a>
+                            <a href="#" class="w-12 h-12 rounded-full bg-oatmeal flex items-center justify-center hover:bg-stone-300 transition-colors">
+                                <span class="text-slate-700">红</span>
+                            </a>
+                            <a href="#" class="w-12 h-12 rounded-full bg-oatmeal flex items-center justify-center hover:bg-stone-300 transition-colors">
+                                <span class="text-slate-700">INS</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 页脚 (Footer) ===== -->
+    <footer class="bg-charcoal text-cream py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <!-- 页脚Logo - 与导航栏一致的简约SVG -->
+                        <svg class="w-6 h-6 text-cream" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 24 L16 8 L24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 20 L22 20" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                            <circle cx="16" cy="12" r="1" fill="currentColor"/>
+                        </svg>
+                        <h2 class="serif text-xl">艾飞雅服饰有限公司</h2>
+                    </div>
+                    <p class="text-cream/70 text-sm">Aifeiya Apparel Co., Ltd.</p>
+                </div>
+                
+                <div class="text-center md:text-right">
+                    <p class="text-cream/70 mb-2">© 2026 艾飞雅服饰有限公司 版权所有</p>
+                    <p class="text-cream/50 text-sm">静奢美学，衣以载道</p>
+                </div>
+            </div>
+            
+            <div class="border-t border-cream/20 mt-8 pt-8 text-center">
+                <p class="text-cream/60 text-sm">
+                    本网站展示产品均为示意，实际产品以实物为准。所有图片版权归艾飞雅服饰有限公司所有。
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== 图片放大模态框 ===== -->
+    <div id="imageModal" class="image-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <img id="modalImage" class="modal-image" src="" alt="放大图片">
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // 移动端菜单切换
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+                
+                // 点击菜单链接后关闭菜单
+                const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+                mobileMenuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileMenu.classList.add('hidden');
+                    });
+                });
+            }
+            
+            // 淡入动画观察器
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const fadeObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            fadeElements.forEach(el => {
+                fadeObserver.observe(el);
+            });
+            
+            // 画廊过滤功能
+            const filterButtons = document.querySelectorAll('.category-filter');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有按钮的active类
+                    filterButtons.forEach(btn => btn.classList.remove('active', 'border-charcoal', 'text-charcoal'));
+                    filterButtons.forEach(btn => btn.classList.add('border-stone-300', 'text-slate-700'));
+                    
+                    // 为当前按钮添加active类
+                    this.classList.add('active', 'border-charcoal', 'text-charcoal');
+                    this.classList.remove('border-stone-300', 'text-slate-700');
+                    
+                    const filterValue = this.getAttribute('data-category');
+                    
+                    // 过滤画廊项目
+                    galleryItems.forEach(item => {
+                        if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                            item.style.display = 'block';
+                            
+                            // 添加淡入效果
+                            setTimeout(() => {
+                                item.classList.add('visible');
+                            }, 10);
+                        } else {
+                            item.style.display = 'none';
+                            item.classList.remove('visible');
+                        }
+                    });
+                });
+            });
+            
+            // 平滑滚动到锚点
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // 图片双击放大功能
+            const imageModal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalClose = document.getElementById('modalClose');
+
+            // 为所有产品图片添加双击事件监听器
+            const productImages = document.querySelectorAll('.gallery-item img');
+
+            productImages.forEach(img => {
+                // 找到图片的父容器（aspect-[3/4] div）
+                const container = img.parentElement;
+                if (container && container.classList.contains('aspect-[3/4]')) {
+                    container.classList.add('image-container');
+
+                    // 双击事件
+                    let lastTap = 0;
+                    container.addEventListener('dblclick', function(e) {
+                        e.preventDefault();
+                        openImageModal(img.src, img.alt);
+                    });
+
+                    // 移动端双击检测（通过两次点击）
+                    container.addEventListener('touchstart', function(e) {
+                        const currentTime = new Date().getTime();
+                        const tapLength = currentTime - lastTap;
+
+                        if (tapLength < 300 && tapLength > 0) {
+                            e.preventDefault();
+                            openImageModal(img.src, img.alt);
+                        }
+
+                        lastTap = currentTime;
+                    });
+                }
+            });
+
+            // 打开图片模态框
+            function openImageModal(src, alt) {
+                modalImage.src = src;
+                modalImage.alt = alt;
+                imageModal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // 防止背景滚动
+            }
+
+            // 关闭图片模态框
+            function closeImageModal() {
+                imageModal.classList.remove('active');
+                document.body.style.overflow = ''; // 恢复背景滚动
+            }
+
+            // 关闭按钮点击事件
+            modalClose.addEventListener('click', closeImageModal);
+
+            // 点击模态框背景关闭
+            imageModal.addEventListener('click', function(e) {
+                if (e.target === imageModal) {
+                    closeImageModal();
+                }
+            });
+
+            // ESC键关闭
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && imageModal.classList.contains('active')) {
+                    closeImageModal();
+                }
+            });
+
+            // 初始化：触发一次滚动以检查哪些元素应该显示
+            setTimeout(() => {
+                window.dispatchEvent(new Event('scroll'));
+            }, 100);
+        });
+    </script>
+</body>
+</html>
